@@ -9,4 +9,8 @@ data:
     [mysqld]
     binlog-format=mixed
 
+  test.cnf: |
+    [test]
+    test=test_value
+
 

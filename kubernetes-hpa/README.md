@@ -6,7 +6,7 @@
 ## Formula HPA uses 
 
    desiredReplicas = ceil[currentReplicas * ( currentMetricValue / desiredMetricValue )]
-
+                    =   (1 *(250/ 30)) == 8.3 == 9
     
 ##  Run below commands to HPA
     

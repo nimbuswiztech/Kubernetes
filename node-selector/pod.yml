@@ -7,7 +7,7 @@ spec:
     - name: my-python
       image: deekshithsn/python-web-app
   nodeSelector:
-    size: medium
+    speed: medium
 
 
 

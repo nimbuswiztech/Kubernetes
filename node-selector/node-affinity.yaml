@@ -7,24 +7,23 @@ spec:
     matchLabels:
       app: nginx
   replicas: 3
-  template: 
+  template:
     metadata:
       labels:
         app: nginx
     spec:
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-#          preferredDuringSchedulingIgnoredDuringExecution:
-#          preferredDuringSchedulingRequiredDuringExecution:
-          - labelSelector:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
               matchExpressions:
-              - key: app
+              - key: type
                 operator: In
                 values:
-                - blue
+                - api
       containers:
-      - name: nginx
-        image: nginx:1.7.9
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

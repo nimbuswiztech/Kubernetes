@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: deekshithsn/k8s-deployment-strategies
+        image: deekshithsn/k8s-deployment-strategies-1232
         ports:
         - name: http
           containerPort: 8080

@@ -18,8 +18,15 @@ spec:
           image: kodekloud/examplevotingapp_vote:v1
           ports:
             - containerPort: 80
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
   selector:
     matchLabels:
       name: voting-app-pod
       app: demo-voting-app
-  replicas: 2
+  replicas: 5

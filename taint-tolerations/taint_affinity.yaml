@@ -13,9 +13,8 @@ spec:
                 values:
                   - devs
   tolerations:
-    - key: "dedicated"
-      operator: "Equal"
-      value: "devs"
+    - key: "type"
+      operator: "Exists"
       effect: "NoSchedule"
   containers:
     - name: just-container

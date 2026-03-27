@@ -1,14 +1,19 @@
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  annotations:
-  name: node-example
-  namespace: default
+  name: php-apache
+  namespace: demo
 spec:
-  maxReplicas: 4
   minReplicas: 1
+  maxReplicas: 4
   scaleTargetRef:
-    apiVersion: extensions/v1
+    apiVersion: apps/v1        # ✅ was extensions/v1
     kind: Deployment
-    name: node-example
-  targetCPUUtilizationPercentage: 1
+    name: php-apache           # ✅ was node-example
+  metrics:
+  - type: Resource             # ✅ correct v2 syntax
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 30
