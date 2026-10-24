@@ -1,0 +1,24 @@
+# Apply only after the instructor has confirmed a dedicated, isolated lab node is safe to taint.
+# The manifest itself does not taint any node.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: toleration-demo
+  namespace: scheduling-demo
+  labels:
+    app: toleration-demo
+spec:
+  tolerations:
+    - key: training.example.com/dedicated
+      operator: Equal
+      value: fail
+      effect: NoSchedule
+  # Add nodeSelector only if the instructor has also recorded a matching lab-node label:
+  # nodeSelector:
+  #   training.example.com/dedicated: demo
+  containers:
+    - name: web
+      image: public.ecr.aws/nginx/nginx:stable-alpine
+      resources:
+        requests: {cpu: 25m, memory: 32Mi}
+        limits: {cpu: 100m, memory: 64Mi}

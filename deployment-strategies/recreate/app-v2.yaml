@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: deekshithsn/k8s-deployment-strategies-1232
+        image: deekshithsn/k8s-deployment-strategies
         ports:
         - name: http
           containerPort: 8080
@@ -44,4 +44,6 @@ spec:
           httpGet:
             path: /ready
             port: probe
+          periodSeconds: 5
+          initialDelaySeconds: 20
           periodSeconds: 5

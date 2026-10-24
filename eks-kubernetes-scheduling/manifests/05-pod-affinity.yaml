@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-affinity
+  namespace: scheduling-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-affinity
+  template:
+    metadata:
+      labels:
+        app: frontend-affinity
+        tier: frontend
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: backend
+              namespaces: [scheduling-demo]
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: frontend
+          image: public.ecr.aws/nginx/nginx:stable-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {cpu: 100m, memory: 64Mi}

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Deployment Strategies Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --code-bg: #0f172a;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation */
+        nav {
+            width: 280px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 280px;
+            padding: 4rem;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: white;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Cards for Pros/Cons */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card.pros h4 { color: var(--success); }
+        .card.cons h4 { color: var(--warning); }
+
+        ul {
+            list-style-type: none;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        code {
+            color: #38bdf8;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sequential Animation Delay */
+        section:nth-child(1) { animation-delay: 0.1s; }
+        section:nth-child(2) { animation-delay: 0.3s; }
+        section:nth-child(3) { animation-delay: 0.5s; }
+        section:nth-child(4) { animation-delay: 0.7s; }
+        section:nth-child(5) { animation-delay: 0.9s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            main {
+                margin-left: 0;
+                padding: 2rem;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">K8s Deployments</div>
+        <a href="#intro" class="active">Introduction</a>
+        <a href="#recreate">Recreate</a>
+        <a href="#rolling">Rolling Update</a>
+        <a href="#bluegreen">Blue / Green</a>
+        <a href="#canary">Canary</a>
+    </nav>
+
+    <main>
+        <section id="intro">
+            <h1>Kubernetes Deployment Strategies</h1>
+            <p>Welcome to the ultimate guide for teaching Kubernetes Deployment Strategies. This interactive guide breaks down the four most common methods to roll out applications in Kubernetes, complete with visual explanations, pros, cons, and when to use them.</p>
+        </section>
+
+        <section id="recreate">
+            <h2>1. Recreate Strategy</h2>
+            <p>The <strong>Recreate</strong> strategy terminates all currently running instances of an application before creating new ones. This means there is a period of downtime where no instances are serving traffic.</p>
+            
+            <h3>How it works</h3>
+            <p>Kubernetes scales down the existing ReplicaSet to 0, waits for pods to terminate, and then scales up the new ReplicaSet to the desired number of replicas.</p>
+            
+            <div class="card-grid">
+                <div class="card pros">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Advantages</h4>
+                    <ul>
+                        <li>Extremely simple to setup.</li>
+                        <li>Application state is entirely renewed.</li>
+                        <li>No backward compatibility issues (v1 and v2 never run at the same time).</li>
+                    </ul>
+                </div>
+                <div class="card cons">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Disadvantages</h4>
+                    <ul>
+                        <li>Guaranteed downtime.</li>
+                        <li>User experience is heavily impacted during the deployment window.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>YAML Snippet</h3>
+<pre><code>spec:
+  replicas: 3
+  strategy:
+    type: Recreate
+</code></pre>
+        </section>
+
+        <section id="rolling">
+            <h2>2. Rolling Update Strategy</h2>
+            <p>The <strong>Rolling Update</strong> strategy (default in Kubernetes) updates Pods in a rolling fashion, rather than all at once. It gradually replaces old Pods with new ones, ensuring that the application remains available during the rollout.</p>
+            
+            <h3>How it works</h3>
+            <p>Kubernetes scales up a new ReplicaSet while simultaneously scaling down the old one. It uses <code>maxSurge</code> and <code>maxUnavailable</code> to control the rollout pace.</p>
+
+            <div class="card-grid">
+                <div class="card pros">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Advantages</h4>
+                    <ul>
+                        <li>Zero downtime deployment.</li>
+                        <li>Built-in and default behavior of Kubernetes Deployments.</li>
+                        <li>Slow rollout allows for monitoring of errors.</li>
+                    </ul>
+                </div>
+                <div class="card cons">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Disadvantages</h4>
+                    <ul>
+                        <li>Rollout/rollback can take time.</li>
+                        <li>v1 and v2 run simultaneously; requires backward compatibility (e.g. database schemas).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>YAML Snippet</h3>
+<pre><code>spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+</code></pre>
+        </section>
+
+        <section id="bluegreen">
+            <h2>3. Blue / Green Deployment</h2>
+            <p>A <strong>Blue/Green</strong> deployment involves running two identical environments. 'Blue' is the current live environment, and 'Green' is the new version. Traffic is switched over from Blue to Green all at once at the load balancer or service level.</p>
+            
+            <h3>How it works</h3>
+            <p>Deploy a new ReplicaSet (Green) while the old one (Blue) is still serving traffic. Once Green is ready and tested, update the Service selector to point to Green.</p>
+
+            <div class="card-grid">
+                <div class="card pros">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Advantages</h4>
+                    <ul>
+                        <li>Instant rollout and instant rollback.</li>
+                        <li>No version conflict (v1 and v2 are completely separate).</li>
+                        <li>Allows for comprehensive testing on Green before go-live.</li>
+                    </ul>
+                </div>
+                <div class="card cons">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Disadvantages</h4>
+                    <ul>
+                        <li>Requires 2x the resources (costly).</li>
+                        <li>Stateful applications can make database cutovers difficult.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Implementation Concept</h3>
+<pre><code># Change the service selector from:
+selector:
+  app: my-app
+  version: v1 # Blue
+
+# To:
+selector:
+  app: my-app
+  version: v2 # Green
+</code></pre>
+        </section>
+
+        <section id="canary">
+            <h2>4. Canary Deployment</h2>
+            <p>A <strong>Canary</strong> deployment rolls out the new version to a small subset of users before rolling it out to the entire infrastructure and making it available to everybody.</p>
+            
+            <h3>How it works</h3>
+            <p>Deploy a small number of Pods running the new version alongside the stable version. Both share the same Service, so traffic is distributed between them (e.g., 90% stable, 10% canary).</p>
+
+            <div class="card-grid">
+                <div class="card pros">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Advantages</h4>
+                    <ul>
+                        <li>Test in production with real user traffic.</li>
+                        <li>Risk is minimized (only affects a small % of users).</li>
+                        <li>Easy to rollback if error rates spike.</li>
+                    </ul>
+                </div>
+                <div class="card cons">
+                    <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Disadvantages</h4>
+                    <ul>
+                        <li>Slow rollout process.</li>
+                        <li>Requires complex traffic management (e.g. Istio or NGINX Ingress for exact % control).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Implementation Concept</h3>
+<pre><code># Stable Deployment
+replicas: 9
+labels:
+  app: my-app
+  track: stable
+
+# Canary Deployment
+replicas: 1
+labels:
+  app: my-app
+  track: canary
+
+# Service (matches both)
+selector:
+  app: my-app
+</code></pre>
+        </section>
+    </main>
+
+    <script>
+        // Smooth scrolling and active navigation link updates
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Intersection Observer for active nav state
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

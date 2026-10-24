@@ -1,0 +1,28 @@
+# OPTIONAL, CLUSTER-SCOPED MUTATION. Never applied by default scripts.
+# Apply only after explicit approval, target-cluster confirmation, and a before-state review.
+# The custom ClusterRole below is deliberately limited to read-only Nodes access.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rbac-demo-node-reader
+  labels:
+    app.kubernetes.io/part-of: eks-rbac-training
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rbac-demo-demo-reader-node-read
+  labels:
+    app.kubernetes.io/part-of: eks-rbac-training
+subjects:
+  - kind: ServiceAccount
+    name: demo-reader
+    namespace: rbac-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rbac-demo-node-reader

@@ -4,11 +4,14 @@ metadata:
   name: my-app
   labels:
     app: my-app
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-08588833f6bd5dd5c,subnet-03f30c086415e5999
 spec:
   type: LoadBalancer
   ports:
-  - name: http
-    port: 80
-    targetPort: http
+    - name: http
+      port: 80
+      targetPort: http
   selector:
     app: my-app

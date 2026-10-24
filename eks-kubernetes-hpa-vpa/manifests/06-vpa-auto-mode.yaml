@@ -1,0 +1,14 @@
+# OPTIONAL / DISRUPTIVE. Recreate may evict Pods. Lab-owned workload only.
+# Confirm supported semantics for the installed VPA release before applying.
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: backend-vpa-recreate
+  namespace: autoscaling-demo
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  updatePolicy:
+    updateMode: "Recreate"

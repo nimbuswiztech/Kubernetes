@@ -1,0 +1,15 @@
+# Intentionally illustrative invalid examples. DO NOT APPLY.
+# Example A: typo/nonexistent class can leave a PVC Pending.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: invalid-class-example
+  namespace: storage-demo
+spec:
+  storageClassName: replace-with-nonexistent-class
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Example B: no volume source/claim is intentionally omitted; use describe/events to learn diagnosis.

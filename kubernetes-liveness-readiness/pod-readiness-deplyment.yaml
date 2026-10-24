@@ -13,19 +13,29 @@ spec:
         run: probe-demo
     spec:
       containers:
-      - image: deekshithsn/probe-demo
-        name: probe-demo
-        env:
-        - name: START_DELAY
-          value: "60"        
-        ports:
-        - containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 1
+        - image: deekshithsn/probe-demo
+          name: probe-demo
+          env:
+            - name: START_DELAY
+              value: "60"
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            successThreshold: 3
+            failureThreshold: 3
+            timeoutSeconds: 1 
+            
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 30
+          # Maximum startup window described in the transcript:
+          # 30 x 10 = 300 seconds
+            

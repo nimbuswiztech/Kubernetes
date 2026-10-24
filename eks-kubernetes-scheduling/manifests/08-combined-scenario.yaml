@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-isolated
+  namespace: scheduling-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-isolated
+  template:
+    metadata:
+      labels:
+        app: backend-isolated
+        tier: backend
+    spec:
+      nodeSelector:
+        training.example.com/workload: demo
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: backend-isolated
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: backend
+          image: public.ecr.aws/nginx/nginx:stable-alpine
+          resources:
+            requests: {cpu: 50m, memory: 48Mi}
+            limits: {cpu: 200m, memory: 96Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-near-backend
+  namespace: scheduling-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-near-backend
+  template:
+    metadata:
+      labels:
+        app: frontend-near-backend
+        tier: frontend
+    spec:
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: backend-isolated
+                namespaces: [scheduling-demo]
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: frontend
+          image: public.ecr.aws/nginx/nginx:stable-alpine
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {cpu: 100m, memory: 64Mi}

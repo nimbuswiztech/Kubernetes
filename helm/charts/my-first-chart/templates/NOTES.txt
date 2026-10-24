@@ -1,0 +1,8 @@
+Helm Basics Training release: {{ .Release.Name }}
+
+Check resources:
+  kubectl get deployments,pods,services -n {{ .Release.Namespace }}
+
+For a local port-forward:
+  kubectl port-forward service/{{ include "my-first-chart.fullname" . }} 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+Then open http://127.0.0.1:8080

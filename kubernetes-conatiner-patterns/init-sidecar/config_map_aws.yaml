@@ -5,9 +5,9 @@ metadata:
 data:
   config: |
     [default]
-    region = us-east-1
+    region = eu-north-1
   syncs3.sh: |
     export AWS_CONFIG_FILE="/root/.aws/config" #change it as per user
-    export AWS_ACCESS_KEY_ID=***** #please provide access id 
-    export AWS_SECRET_ACCESS_KEY=***** #please provide secret key
-    aws s3 sync /var/log/nginx s3://your_bucket_name
+    export AWS_ACCESS_KEY_ID=<ACCESS_KEY_ID> #please provide access id 
+    export AWS_SECRET_ACCESS_KEY=<SECRET_KEY> #please provide secret key
+    aws s3 sync /var/log/nginx s3://nimbus-bucket-july26 

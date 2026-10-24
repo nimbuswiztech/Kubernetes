@@ -1,0 +1,33 @@
+# Replace <DISCOVERED_CLASS> with a confirmed compatible IngressClass name.
+# Do not apply until a controller is confirmed and any AWS costs are approved.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-host
+  namespace: ingress-demo
+  labels:
+    app.kubernetes.io/part-of: kubernetes-ingress-basic-demo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: frontend.lab.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+  - host: catalog.lab.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog
+            port:
+              number: 80
+

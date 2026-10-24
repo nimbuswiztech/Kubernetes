@@ -1,0 +1,32 @@
+# Illustrative only. This tolerates the common not-ready/unreachable taints.
+# It does NOT grant permission to run on arbitrary dedicated nodes. Review node taints first.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-observer-tolerations
+  namespace: daemonset-statefulset-demo
+spec:
+  selector:
+    matchLabels:
+      app: node-observer-tolerations
+  template:
+    metadata:
+      labels:
+        app: node-observer-tolerations
+    spec:
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+      containers:
+        - name: observer
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while true; do sleep 60; done"]
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 50m, memory: 48Mi}

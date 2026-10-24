@@ -1,0 +1,6 @@
+apiVersion: v2
+name: my-first-chart
+description: Beginner Helm chart for a simple NGINX web application
+type: application
+version: 0.1.0
+appVersion: "1.27.5"

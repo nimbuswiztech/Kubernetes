@@ -1,0 +1,86 @@
+# Combined scenario is represented by the same small DaemonSet + headless Service + StatefulSet.
+# Apply only into the lab namespace. It is safe to re-apply when the lab owns these objects.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-observer
+  namespace: daemonset-statefulset-demo
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: node-observer
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: node-observer
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: observer
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while true; do echo $(date -u) $(hostname); sleep 60; done"]
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 50m, memory: 48Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ledger-headless
+  namespace: daemonset-statefulset-demo
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: ledger
+  ports:
+    - {name: heartbeat, port: 8080, targetPort: 8080}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ledger
+  namespace: daemonset-statefulset-demo
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ledger
+  ports:
+    - {name: heartbeat, port: 8080, targetPort: 8080}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ledger
+  namespace: daemonset-statefulset-demo
+spec:
+  serviceName: ledger-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ledger
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ledger
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: ledger
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while true; do echo $(date -u) $(hostname) >> /data/heartbeat.log; sleep 30; done"]
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 50m, memory: 48Mi}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests: {storage: 1Gi}

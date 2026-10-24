@@ -1,0 +1,25 @@
+# Intentionally unschedulable example. DO NOT apply on a shared cluster without instructor approval.
+# Demonstrates a nodeSelector that likely matches no node. Inspect with kubectl describe pod.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: negative-no-node-match
+  namespace: daemonset-statefulset-demo
+spec:
+  selector:
+    matchLabels:
+      app: negative-no-node-match
+  template:
+    metadata:
+      labels:
+        app: negative-no-node-match
+    spec:
+      nodeSelector:
+        training.example.com/does-not-exist: "true"
+      containers:
+        - name: demo
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 50m, memory: 48Mi}

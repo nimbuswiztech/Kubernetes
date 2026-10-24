@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: autoscaling-demo
+  labels: {app: backend}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: backend}
+  template:
+    metadata:
+      labels: {app: backend}
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.27-alpine
+        ports: [{name: http, containerPort: 80}]
+        resources:
+          requests: {cpu: 50m, memory: 48Mi}
+          limits: {cpu: 150m, memory: 96Mi}
+        readinessProbe:
+          httpGet: {path: /, port: http}
+          initialDelaySeconds: 2
+          periodSeconds: 5

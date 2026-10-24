@@ -1,0 +1,29 @@
+# Replace <DISCOVERED_CLASS> with a confirmed compatible IngressClass name.
+# Apply only after confirming the controller supports the standard Ingress behavior.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-paths
+  namespace: ingress-demo
+  labels:
+    app.kubernetes.io/part-of: kubernetes-ingress-basic-demo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: frontend.lab.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+      - path: /catalog
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog
+            port:
+              number: 80

@@ -1,0 +1,15 @@
+# Apply only after a matching static-lab PV has been created and reviewed.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-lab-claim
+  namespace: storage-demo
+spec:
+  storageClassName: static-lab
+  volumeName: static-lab-pv
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi

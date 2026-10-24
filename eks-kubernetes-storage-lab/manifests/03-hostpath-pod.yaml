@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-demo
+  namespace: storage-demo
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+  containers:
+    - name: demo
+      image: public.ecr.aws/docker/library/busybox:1.36
+      command: ["sh", "-c", "id; ls -ld /lab; echo hostpath-lab-marker > /lab/marker.txt; cat /lab/marker.txt; sleep 3600"]
+      resources:
+        requests: {cpu: 10m, memory: 16Mi}
+        limits: {cpu: 100m, memory: 64Mi}
+      volumeMounts:
+        - name: lab-dir
+          mountPath: /lab
+  volumes:
+    - name: lab-dir
+      hostPath:
+        path: /tmp/storage-demo-lab
+        type: DirectoryOrCreate

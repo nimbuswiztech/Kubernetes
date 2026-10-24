@@ -1,0 +1,28 @@
+# Student exercise: read Pods and Pod logs in rbac-demo, but not create Pods or read Secrets.
+# Students should complete the TODOs and apply only after review.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-observer-exercise
+  namespace: rbac-demo
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-observer-exercise-binding
+  namespace: rbac-demo
+subjects:
+  - kind: ServiceAccount
+    name: demo-reader
+    namespace: rbac-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-observer-exercise

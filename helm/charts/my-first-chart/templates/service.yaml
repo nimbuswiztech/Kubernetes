@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "my-first-chart.fullname" . }}
+  labels:
+    {{- include "my-first-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "my-first-chart.name" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}

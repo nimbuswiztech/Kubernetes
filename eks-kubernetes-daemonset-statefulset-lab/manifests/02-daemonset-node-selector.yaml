@@ -1,0 +1,25 @@
+# Teaching variant: apply only after replacing the selector value with a label
+# that ALREADY exists on intended lab nodes. Do not label shared nodes for this demo.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-observer-selector
+  namespace: daemonset-statefulset-demo
+spec:
+  selector:
+    matchLabels:
+      app: node-observer-selector
+  template:
+    metadata:
+      labels:
+        app: node-observer-selector
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: observer
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while true; do date; sleep 60; done"]
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 50m, memory: 48Mi}

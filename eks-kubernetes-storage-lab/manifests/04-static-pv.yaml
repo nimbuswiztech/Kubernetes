@@ -1,0 +1,21 @@
+# TEMPLATE ONLY: DO NOT APPLY unchanged.
+# Static PVs represent an existing backend. This template deliberately has a placeholder handle.
+# Select an approved disposable EBS volume, verify AZ/filesystem/ownership, and have an administrator review first.
+# Do not use this provisioner template unchanged on EKS Auto Mode; verify the required driver/provisioner.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: static-lab-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: static-lab
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: "vol-0cf1fa993ce64fb02"
+    fsType: ext4
+  # Add nodeAffinity for the actual volume Availability Zone after discovering it.

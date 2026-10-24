@@ -18,10 +18,9 @@ spec:
         command: ['sh', '-c', 
           'until pg_isready -h postgres -p 5432; 
           do echo waiting for database; sleep 2; done;']
-      - name: fail
-        image: postgres:9.6.5
-        command: ['sh', '-c', 
-          'exit 1']
+      # - name: fail
+      #   image: postgres:9.6.5
+      #   command: ['sh', '-c', 'exit 0']
       containers:
       - image: deekshithsn/go-url-shortener:1.0
         name: go-url-shortener

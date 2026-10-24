@@ -1,0 +1,9 @@
+# Reference note: use scripts/02-generate-load.sh DURATION_SECONDS.
+# The script creates a Job with a deadline and removes it on exit. Do not apply a long-running load manually.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bounded-load-generator-notes
+  namespace: autoscaling-demo
+data:
+  README: "Run scripts/02-generate-load.sh with a duration from 10 to 300 seconds."

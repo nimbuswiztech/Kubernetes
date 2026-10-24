@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: scheduling-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: backend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-39-149.eu-north-1.compute.internal
+      containers:
+        - name: backend
+          image: public.ecr.aws/nginx/nginx:stable-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests: {cpu: 50m, memory: 48Mi}
+            limits: {cpu: 200m, memory: 96Mi}

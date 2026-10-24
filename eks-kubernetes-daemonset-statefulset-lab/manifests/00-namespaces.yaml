@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: daemonset-statefulset-demo
+  labels:
+    app.kubernetes.io/part-of: eks-controller-training
+    purpose: classroom-lab

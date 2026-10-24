@@ -20,3 +20,5 @@ spec:
           value: "60"        
         ports:
         - containerPort: 8080
+
+        
