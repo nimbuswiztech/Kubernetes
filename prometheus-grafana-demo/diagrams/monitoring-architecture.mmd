@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph K["Kubernetes cluster"]
+      W["Deployments and Pods"]
+      E["Exporters / Kubernetes metrics"]
+      P["Prometheus"]
+      W --> E
+      E -->|"scrape endpoints"| P
+    end
+    G["Grafana"]
+    D["Dashboard panels"]
+    P -->|"PromQL queries"| G
+    G --> D

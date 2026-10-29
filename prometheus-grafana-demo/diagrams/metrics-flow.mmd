@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant T as Metrics target
+    participant P as Prometheus
+    participant S as Time-series storage
+    participant G as Grafana
+    P->>T: Scrape metrics endpoint
+    T-->>P: Metric names, labels, samples
+    P->>S: Store timestamped samples
+    G->>P: PromQL query
+    P-->>G: Query result
+    G-->>G: Render panel/dashboard

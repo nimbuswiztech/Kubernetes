@@ -1,0 +1,7 @@
+# Grafana overrides for a local training demo.
+grafana:
+  enabled: true
+  persistence:
+    enabled: false
+  service:
+    type: ClusterIP

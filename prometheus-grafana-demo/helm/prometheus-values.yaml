@@ -1,0 +1,19 @@
+# Small learning-oriented overrides for kube-prometheus-stack.
+# This is not a production sizing or retention recommendation.
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
+
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+
+defaultRules:
+  create: true
